@@ -4,7 +4,7 @@
 | Date:            | 2018-03-18                                      |
 | Audience:        | Evolution                                       |
 | Revises:         | none                                            |
-| Reply to:        | Richard Smith, Gor Nishanov (gorn@microsoft.com)               |
+| Reply to:        | Richard Smith (richardsmith@google.com), Gor Nishanov (gorn@microsoft.com)               |
 
 # HALO: Coroutine Heap Allocation eLision Optimization: The joint response.
 
@@ -21,6 +21,7 @@ This document is that join response. It evaluates the necessary conditions for h
 to work. After careful study, we conclude that:
 1. Heap allocation elision optimization DOES NOT require inlining potentially unbounded amount of code, such as coroutine body OR the algorithms using the coroutine (such as `accumulate` in the generator example).
 2. It DOES REQUIRE inlining some compiler synthesized code (such as coroutine ramp) and inlining bounded amount of code from some wrapper/glue code that gives the coroutine the desired semantics (such as `begin` in the generator example).
+3. With current implementation of coroutines in clang today, inlining the coroutine ramp function requires the coroutine to be defined in the same translation unit. At this time, we did not evaluate the potential of future improvements of how this optimization may apply across ABI boundaries where the definition of the coroutine is not available in the current translation unit.
 
 The rest of the document goes over details of what exactly needs to be inlined and explores generator and task examples.
 
@@ -84,8 +85,13 @@ To give a feel of how big the function that needs to be inlined are, here is a t
 ```c++
 struct generator {
   struct promise_type { ... };
+
+  struct iterator {
+    ...
+    coroutine_handle<promise_type> h_copy;
+  };
   ...
-  coroutine_handle<promise_type> h; // wrapper around void* trival to construct/destruct
+  coroutine_handle<promise_type> h; // wrapper around void* trivial to construct/destruct
 };
 ```
 
