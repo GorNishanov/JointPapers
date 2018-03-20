@@ -10,7 +10,7 @@
 
 ## Summary
 
-During the discussion of the coroutine in a Coroutine Tuesday session in Jacksonville 2018, we had the following exchange:
+During the discussion during "Coroutine Tuesday" session in Jacksonville 2018, we had the following exchange:
 > Richard Smith: I have concerns about the generator example. ... The optimization
 > relies on `accumulate` being inlinable or optimizable. ...
  You need to inline at least `begin` to know that the value of the handle is not changed.
