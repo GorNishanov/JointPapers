@@ -185,7 +185,7 @@ task promise_type::get_return_object() {
 Destructor:
 ```c++
 ~task() { if(h) h.destroy(); }
-```****
+```
 
 await_suspend:
 ```c++
