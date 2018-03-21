@@ -64,8 +64,8 @@ Conceptually, the coroutine transformation will transform `range(int,int)` into 
 struct range$state-machine { ... transformed user-authored-body-is-here ... };
 
 generator<int> range(int from, int to) { // coroutine ramp/thunk/trampoline
-   auto p = new range$state-machine(from, to);
-   return p->get_return_object();
+   auto s = new range$state-machine(from, to);
+   return s->promise.get_return_object();
 }
 ```
 
@@ -124,7 +124,10 @@ generator promise_type::get_return_object() {
 
 `begin()` must be inlinable
 ```c++
-iterator begin() { return {h}; }
+iterator begin() {
+  if (h) h.resume();
+  return {h};
+}
 ```
 
 <!--
@@ -209,13 +212,13 @@ task promise_type::get_return_object() {
 
 Destructor:
 ```c++
-~task() { if(h) h.destroy(); }
-```****
+~task() { if (h) h.destroy(); }
+```
 
 `await_suspend`:
 ```c++
-auto await_suspend(coroutine_handle<promise_type> h) {
-  h.promise().waiter = h;
+auto await_suspend(coroutine_handle<> waiter) {
+  h.promise().waiter = waiter;
   return h;
 }
 ```
@@ -223,7 +226,7 @@ auto await_suspend(coroutine_handle<promise_type> h) {
 `await_ready`/`await_resume`:
 ```c++
 constexpr bool await_ready() const noexcept { return false; }
-constexpr void await_resyme() const noexcept {}
+constexpr void await_resume() const noexcept {}
 ```
 
 ## Conclusions
