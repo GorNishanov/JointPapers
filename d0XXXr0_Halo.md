@@ -6,7 +6,7 @@
 | Revises:         | none                                            |
 | Reply to:        | Richard Smith (richardsmith@google.com), Gor Nishanov (gorn@microsoft.com)               |
 
-# HALO: Coroutine Heap Allocation eLision Optimization: the joint response
+# Halo: coroutine Heap Allocation eLision Optimization: the joint response
 
 ## Summary
 
